@@ -1,0 +1,12 @@
+*~
+bin/
+last_build
+build_history
+/stage
+/dmd
+/druntime
+/phobos
+/installer
+/dlang.org
+/tools
+/*.log
