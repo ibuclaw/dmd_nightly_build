@@ -28,6 +28,7 @@ projects=(dmd druntime phobos dlang.org tools installer)
 local wd=$(pwd)
 # Configuration
 local makecmd=gmake
+local host_dc=../../../dmd_nightly/freebsd/bin64/dmd
 local parallel=8
 local model=64
 # List of projects to install vs. update. Their disjoint union is
@@ -171,7 +172,7 @@ function makeWorld() {
     (
         cd "$wd/dmd/src" &&
         $makecmd -f posix.mak clean MODEL=$model &&
-        $makecmd -f posix.mak -j $parallel MODEL=$model
+        $makecmd -f posix.mak -j $parallel HOST_DC=$host_dc MODEL=$model
     )
 
 # Update the running dmd version
