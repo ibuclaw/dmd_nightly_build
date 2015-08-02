@@ -188,12 +188,14 @@ function makeWorld() {
 # Then make druntime
     (
         cd "$wd/druntime" &&
+        $makecmd -f posix.mak clean MODEL=$model &&
         $makecmd -f posix.mak -j $parallel DMD="$wd/dmd/src/dmd" MODEL=$model
     )
 
 # Then make phobos
     (
         cd "$wd/phobos" &&
+        $makecmd -f posix.mak clean MODEL=$model &&
         $makecmd -f posix.mak -j $parallel DMD="$wd/dmd/src/dmd" MODEL=$model
     )
 
