@@ -29,6 +29,7 @@ local wd=$(pwd)
 # Configuration
 local makecmd=gmake
 local host_dc=../../../dmd_nightly/freebsd/bin64/dmd
+local target_dc="$wd/dmd/src/dmd"
 local parallel=8
 local model=64
 # List of projects to install vs. update. Their disjoint union is
@@ -45,7 +46,7 @@ function handleCmdLine() {
     local arg
     for arg in $*; do
         case $arg in
-    	    (--tag=*)
+            (--tag=*)
             tag="`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`"
             ;;
             (install)
@@ -129,7 +130,7 @@ function installAnew() {
         if [[ ! -z $tag &&
                     ($project = dmd || $project = druntime || $project = phobos ||
                         $project = dlang.org) ]]; then
-	        ( cd $wd/$project && git checkout v$tag )
+                ( cd $wd/$project && git checkout v$tag )
         fi
     done
 }
@@ -169,41 +170,45 @@ function update() {
 
 function makeWorld() {
 # First make dmd
-    (
+    if [[ ! -f "$host_dc" ]]; then
         cd "$wd/dmd/src" &&
-        $makecmd -f posix.mak clean MODEL=$model &&
+        $makecmd -f posix.mak clean AUTO_BOOTSTRAP=1 MODEL=$model &&
+        $makecmd -f posix.mak -j $parallel AUTO_BOOTSTRAP=1 MODEL=$model
+    else
+        cd "$wd/dmd/src" &&
+        $makecmd -f posix.mak clean HOST_DC=$host_dc MODEL=$model &&
         $makecmd -f posix.mak -j $parallel HOST_DC=$host_dc MODEL=$model
-    )
+    fi
 
 # Update the running dmd version
     if [[ ! -z $install ]]; then
         local old=$(which dmd)
         if [ -f "$old" ]; then
-            echo "Copying "$wd/dmd/src/dmd" over $old"
+            echo "Copying $target_dc over $old"
             [ ! -w "$old" ] && local sudo="sudo"
-            $sudo cp "$wd/dmd/src/dmd" "$old"
+            $sudo cp "$target_dc" "$old"
         fi
     fi
 
 # Then make druntime
     (
         cd "$wd/druntime" &&
-        $makecmd -f posix.mak clean MODEL=$model &&
-        $makecmd -f posix.mak -j $parallel DMD="$wd/dmd/src/dmd" MODEL=$model
+        $makecmd -f posix.mak clean DMD="$target_dc" MODEL=$model &&
+        $makecmd -f posix.mak -j $parallel DMD="$target_dc" MODEL=$model
     )
 
 # Then make phobos
     (
         cd "$wd/phobos" &&
-        $makecmd -f posix.mak clean MODEL=$model &&
-        $makecmd -f posix.mak -j $parallel DMD="$wd/dmd/src/dmd" MODEL=$model
+        $makecmd -f posix.mak clean DMD="$target_dc" MODEL=$model &&
+        $makecmd -f posix.mak -j $parallel DMD="$target_dc" MODEL=$model
     )
 
 # Then make website
     (
         cd "$wd/dlang.org" &&
-        $makecmd -f posix.mak clean DMD="$wd/dmd/src/dmd" MODEL=$model &&
-        $makecmd -f posix.mak html -j $parallel DMD="$wd/dmd/src/dmd" MODEL=$model
+        $makecmd -f posix.mak clean DMD="$target_dc" MODEL=$model &&
+        $makecmd -f posix.mak html -j $parallel DMD="$target_dc" MODEL=$model
     )
 }
 
