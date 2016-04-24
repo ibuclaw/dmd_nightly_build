@@ -6,7 +6,4 @@ build_history
 /dmd
 /druntime
 /phobos
-/installer
-/dlang.org
-/tools
 /*.log

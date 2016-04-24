@@ -8,10 +8,9 @@
 # First run, create a working directory, e.g. /path/to/d/. Then run
 # this script from that directory (the location of the script itself
 # doesn't matter). It will create the following subdirectories:
-# /path/to/d/dmd, /path/to/d/druntime, /path/to/d/phobos,
-# /path/to/d/dlang.org, /path/to/d/tools, and
-# /path/to/d/installer. Then it will fetch all corresponding projects
-# from github and build them fresh.
+# /path/to/d/dmd, /path/to/d/druntime, and /path/to/d/phobos.
+# Then it will fetch all corresponding projects from github and
+# build them fresh.
 #
 # On an ongoing basis, to update your toolchain from github go again
 # to the same directory (in our example /path/to/d) and run the script
@@ -23,7 +22,7 @@ setopt err_exit
 
 local projects
 typeset -a projects
-projects=(dmd druntime phobos dlang.org tools installer)
+projects=(dmd druntime phobos)
 # Working directory
 local wd=$(pwd)
 # Configuration
@@ -128,8 +127,7 @@ function installAnew() {
             exit 1
         fi
         if [[ ! -z $tag &&
-                    ($project = dmd || $project = druntime || $project = phobos ||
-                        $project = dlang.org) ]]; then
+                    ($project = dmd || $project = druntime || $project = phobos) ]]; then
                 ( cd $wd/$project && git checkout v$tag )
         fi
     done
@@ -202,13 +200,6 @@ function makeWorld() {
         cd "$wd/phobos" &&
         $makecmd -f posix.mak clean DMD="$target_dc" MODEL=$model &&
         $makecmd -f posix.mak -j $parallel DMD="$target_dc" MODEL=$model
-    )
-
-# Then make website
-    (
-        cd "$wd/dlang.org" &&
-        $makecmd -f posix.mak clean DMD="$target_dc" MODEL=$model &&
-        $makecmd -f posix.mak html -j $parallel DMD="$target_dc" MODEL=$model
     )
 }
 
