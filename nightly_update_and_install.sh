@@ -5,7 +5,7 @@ function finish {
   echo "End  :" `date` >> build_history
 }
 
-cd /usr/local/dlang.org/asm/dmd_nightly_build
+cd /usr/local/dlang.org/asm/compilers/dmd_nightly_build
 
 echo "Start:" `date` > last_build
 echo "Start:" `date` >> build_history

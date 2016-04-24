@@ -1,1 +1,1 @@
-touch ../gcc-explorer/app.js
+touch ../../gcc-explorer/app.js
