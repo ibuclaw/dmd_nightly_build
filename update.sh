@@ -36,7 +36,8 @@ local model=64
 local toInstall toUpdate
 typeset -a toInstall toUpdate
 # Mess to go here
-local tempdir=$(mktemp -d /tmp/dmd-update.XXX)
+local tempdir=$(mktemp -d "$wd/tmp/dmd-update.XXX")
+trap "rm -rf $tempdir" EXIT
 
 #
 # Take care of the command line arguments
