@@ -27,7 +27,7 @@ projects=(dmd druntime phobos)
 local wd=$(pwd)
 # Configuration
 local makecmd=gmake
-local host_dc=../../../dmd_nightly/freebsd/bin64/dmd
+local host_dc="$wd/../dmd_nightly/freebsd/bin64/dmd"
 local target_dc="$wd/dmd/src/dmd"
 local parallel=8
 local model=64
